@@ -7,6 +7,8 @@ These functions allow you to obtain award data from the NIH RePORTER API (https:
 
 These functions are still very much in development, so there may be bugs. Of special note, the create_query() function only allows you to search a limited number of the available fields in NIH RePORTER. This is due to the complexity, and seeming arbitrariness, of the API request format. More search fields will be added to the function over time. If there are fields that you need that are not yet available in the function, please let me know. 
 
+These functions use the httr, jsonlite, and tm packages, so you'll need to have them installed for the functions to work. The httr and jsonlite packages are included in the tidyverse, so you probably already have them, but tm is a special case, so you'll probably need to install it separately. 
+
 ## Usage
 
 ### Loading the .r file
