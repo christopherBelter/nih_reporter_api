@@ -28,7 +28,7 @@ create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "",
 		limit = jsonlite::unbox(50)
 	)
 	if (pi_name == "") {theQ$criteria$pi_names <- NULL}
-	if (search_text == "") {theQ$criteria$advancedTextSearch <- NULL}
+	#if (search_text == "") {theQ$criteria$advancedTextSearch <- NULL}
 	theQ$criteria <- theQ$criteria[!theQ$criteria == ""]
 	theQ <- jsonlite::toJSON(theQ)
 	return(theQ)
@@ -36,7 +36,6 @@ create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "",
 ## usage examples
 ## my_query <- create_query(FY = "2019", funding_mechanism = "RC")
 ## my_query <- create_query(IC = "NICHD", is_admin_ic = TRUE, include_active = TRUE, exclude_subprojects = TRUE)
-## my_query <- create_query(FY = "2019", funding_mechanism = "RC")
 ## my_query <- create_query(IC = "NCI", activity_code = c("R01", "R21"))
 ## my_query <- create_query(IC = c("NCI", "NIAID"), FY = "2020")
 ## my_query <- create_query(IC = "NICHD", FY = c("2020", "2019", "2018"))
