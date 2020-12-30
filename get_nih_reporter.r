@@ -49,7 +49,7 @@ get_nih_reporter <- function(my_query, outfile) {
 	mStart <- as.numeric(querya$offset)
 	perPage <- as.numeric(querya$limit)
 	message("Retrieving results ", mStart + 1, " to ", perPage)
-	theURL <- httr::POST("https://api.reporter.nih.gov/v1/projects/Search", httr::accept("text/plain"), httr::content_type_json(), body = mQuery)
+	theURL <- httr::POST("https://api.reporter.nih.gov/v1/projects/Search", httr::accept("text/plain"), httr::content_type_json(), body = my_query)
 	theData <- httr::content(theURL, as = "text")
 	if (httr::http_error(theURL) == TRUE) {
 		message("HTTP error.")
@@ -67,9 +67,9 @@ get_nih_reporter <- function(my_query, outfile) {
 		oStart <- mStart
 		mStart <- mStart + perPage
 		gettingPage <- mStart + perPage
-		mQuery <- gsub(paste0("\"offset\":", oStart), paste0("\"offset\":", mStart), mQuery)
+		my_query <- gsub(paste0("\"offset\":", oStart), paste0("\"offset\":", mStart), my_query)
 		message("Retrieving results ", mStart, " to ", gettingPage, " of ", resultCount)
-		theURL <- httr::POST("https://api.reporter.nih.gov/v1/projects/Search", httr::accept("text/plain"), httr::content_type_json(), body = mQuery)
+		theURL <- httr::POST("https://api.reporter.nih.gov/v1/projects/Search", httr::accept("text/plain"), httr::content_type_json(), body = my_query)
 		theData <- httr::content(theURL, as = "text")
 		if (httr::http_error(theURL) == TRUE) {
 			message("HTTP error.")
