@@ -42,3 +42,13 @@ Once you have the query set, you then pass it to the get_nih_reporter() function
     awards <- get_nih_reporter(my_query, "reporter_data.txt")
     
 The API limits you to downloading 50 awards at a time, but the function will automatically make additional requests until all of the available awards have been downloaded. The resulting awards object will then be a data frame of the requested awards with one award per row. The raw JSON data will also be saved to the outfile, in this case specified as reporter_data.txt. 
+
+### Parsing .txt files
+
+The RePORTER data often contains strange characters or embedded nulls in the project abstract and/or public health relevance fields that can cause errors later on. This is especially true when you use write.csv() to write the data frame created by the get_nih_reporter() function and then try to read it back into R at a later date. So I've added a convenience function, extract_reporter(), to read the outfile created by the get_nih_reporter() function back into R.
+
+To use it, simply run the function on the outfile created by the get_nih_reporter() function:
+
+    awards <- extract_reporter("reporter_data.txt")
+    
+And the fuction will return the same data frame that was originally created by the get_nih_reporter() function.
