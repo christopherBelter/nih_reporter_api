@@ -1,3 +1,4 @@
+## note: requests for records 10,001 and up will fail, so break queries up into batches of less than 10,000 to ensure you get everything
 
 #    "advancedTextSearch": {
 #      "searchText": "string",
@@ -6,7 +7,7 @@
 #      "searchField": "string"
 #    },
 
-create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "", include_active = "", pi_name = "", org_names = "", exclude_subprojects = "", activity_code = "", funding_mechanism = "", foa = "", project_number = "", covid_response = "") {
+create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "", include_active = "", pi_name = "", org_names = "", exclude_subprojects = "", activity_code = "", funding_mechanism = "", foa = "", project_number = "", appl_ids = "", covid_response = "") {
 	theQ <- list(
 		criteria = list(
 		   fiscal_years = FY, 
@@ -23,10 +24,11 @@ create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "",
 		   funding_mechanism = funding_mechanism,  ## input values include IAA, IM, NSRDC, OR, RC, RP, SB, SRDC, TI, TR
 		   foa = foa, 
 		   project_nums = project_number, 
-		   covid_response = covid_response ## input values: Reg-CV, CV, C3, C4
+		   appl_ids = appl_ids, 
+		   covid_response = covid_response ## input values: Reg-CV, CV, C3, C4, C5
 		), 
 		offset = jsonlite::unbox(0), 
-		limit = jsonlite::unbox(50)
+		limit = jsonlite::unbox(500)
 	)
 	if (pi_name == "") {theQ$criteria$pi_names <- NULL}
 	#if (search_text == "") {theQ$criteria$advancedTextSearch <- NULL}
@@ -75,6 +77,9 @@ get_nih_reporter <- function(my_query, outfile) {
 		if (httr::http_error(theURL) == TRUE) {
 			message("HTTP error.")
 			print(httr::http_status(theURL))
+			writeLines(unlist(theJ), con = outfile)
+			message("Partial results saved to the specified outfile.")
+			break
 		}
 		newData <- jsonlite::fromJSON(theData)
 		thePages[[i]] <- newData$results
@@ -165,8 +170,8 @@ get_nih_reporter <- function(my_query, outfile) {
 	covid <- sapply(thePages$covid_response, paste, collapse = ";")
 	thePages$covid_response <- covid
 	## uses the tm package
-	thePages$abstract_text <- tm::stripWhitespace(thePages$abstract_text)
-	thePages$phr_text <- tm::stripWhitespace(thePages$phr_text)
+	thePages$abstract_text <- tm::stripWhitespace(as.character(thePages$abstract_text))
+	thePages$phr_text <- tm::stripWhitespace(as.character(thePages$phr_text))
 	## end tm package
 	message("Done.")
 	return(thePages)
@@ -263,8 +268,8 @@ extract_reporter <- function(theFile) {
 	covid <- sapply(thePages$covid_response, paste, collapse = ";")
 	thePages$covid_response <- covid
 	## uses the tm package
-	thePages$abstract_text <- tm::stripWhitespace(thePages$abstract_text)
-	thePages$phr_text <- tm::stripWhitespace(thePages$phr_text)
+	thePages$abstract_text <- tm::stripWhitespace(as.character(thePages$abstract_text))
+	thePages$phr_text <- tm::stripWhitespace(as.character(thePages$phr_text))
 	## end tm package
 	message("Done.")
 	return(thePages)
