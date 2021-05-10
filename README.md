@@ -35,7 +35,7 @@ To search for multiple inputs in a single field, use c() to create a vector of i
     
 And so on. 
 
-As of 10 May 2021, you can now search by NIH spending category (or RCDC code) by using the 'spending_cats' argument, but note that the field requires numeric category codes, not the names of the spending categories. So to search for projects with the NIH spending category of 'Pregnancy', you would do: 
+As of 10 May 2021, you can now search by NIH spending category (https://report.nih.gov/funding/categorical-spending#/) by using the 'spending_cats' argument, but note that the field requires numeric category codes, not the names of the spending categories. So to search for projects with the NIH spending category of 'Pregnancy', you would do: 
 
     my_query <- create_query(spending_cats = "3920", FY = "2019", exclude_subprojects = TRUE)
     
