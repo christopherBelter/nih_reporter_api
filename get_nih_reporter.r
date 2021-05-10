@@ -1,13 +1,6 @@
 ## note: requests for records 10,001 and up will fail, so break queries up into batches of less than 10,000 to ensure you get everything
 
-#    "advancedTextSearch": {
-#      "searchText": "string",
-#      "operator": "string",
-#      "searchRegion": "string",
-#      "searchField": "string"
-#    },
-
-create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "", include_active = "", pi_name = "", org_names = "", exclude_subprojects = "", activity_code = "", funding_mechanism = "", foa = "", project_number = "", appl_ids = "", covid_response = "") {
+create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "", include_active = "", pi_name = "", org_names = "", exclude_subprojects = "", activity_code = "", funding_mechanism = "", foa = "", project_number = "", appl_ids = "", covid_response = "", text_search_operator = "and", text_search_field = "all", text_search_string = "", spending_cats = "", match_all_cats = "true") {
 	theQ <- list(
 		criteria = list(
 		   fiscal_years = FY, 
@@ -18,8 +11,8 @@ create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "",
 		   pi_names = data.frame(any_name = jsonlite::unbox(pi_name)), 
 		   org_names = org_names, 
 		   exclude_subprojects = jsonlite::unbox(exclude_subprojects), 
-		   ## advancedTextSearch = data.frame(searchText = jsonlite::unbox(search_text), operator = jsonlite::unbox(search_operator)), 
-		   ## spending_categories, 
+		   advanced_text_search = list(operator = jsonlite::unbox(text_search_operator), search_field = jsonlite::unbox(text_search_field), search_text = jsonlite::unbox(text_search_string)), 
+		   spending_categories = list(Values = spending_cats, match_all = jsonlite::unbox(match_all_cats)), ## note: requires numeric codes as inputs, not actual category names
 		   activity_codes = activity_code, 
 		   funding_mechanism = funding_mechanism,  ## input values include IAA, IM, NSRDC, OR, RC, RP, SB, SRDC, TI, TR
 		   foa = foa, 
@@ -31,7 +24,8 @@ create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "",
 		limit = jsonlite::unbox(500)
 	)
 	if (pi_name == "") {theQ$criteria$pi_names <- NULL}
-	#if (search_text == "") {theQ$criteria$advancedTextSearch <- NULL}
+	if (text_search_string == "") {theQ$criteria$advanced_text_search <- NULL}
+	if (any(spending_cats == "")) {theQ$criteria$spending_categories <- NULL}
 	theQ$criteria <- theQ$criteria[!theQ$criteria == ""]
 	theQ <- jsonlite::toJSON(theQ)
 	return(theQ)
