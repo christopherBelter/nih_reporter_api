@@ -35,13 +35,13 @@ To search for multiple inputs in a single field, use c() to create a vector of i
     
 And so on. 
 
-As of 10 May 2020, you can now search by NIH spending category (or RCDC code) by using the 'spending_cats' argument, but note that the field requires numeric category codes, not the names of the spending categories. So to search for projects with the NIH spending category of 'Pregnancy', you would do: 
+As of 10 May 2021, you can now search by NIH spending category (or RCDC code) by using the 'spending_cats' argument, but note that the field requires numeric category codes, not the names of the spending categories. So to search for projects with the NIH spending category of 'Pregnancy', you would do: 
 
     my_query <- create_query(spending_cats = "3920", FY = "2019", exclude_subprojects = TRUE)
     
 because the 'Pregnancy' spending category has the numeric code of 3920. As far as I am aware, there is no comprehensive list of spending category codes available.
 
-Also as of 10 May 2020, you can now run text searches in the API. To search for the boolean string 'pregnancy OR pregnant', you can either do something like
+Also as of 10 May 2021, you can now run text searches in the API. To search for the boolean string 'pregnancy OR pregnant', you can either do something like
 
     my_query <- create_query(FY = "2019", IC = "NHLBI", text_search_string = "pregnancy pregnant", text_search_operator = "or")
     
