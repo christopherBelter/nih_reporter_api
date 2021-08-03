@@ -1,6 +1,9 @@
-## note: requests for records 10,001 and up will fail, so break queries up into batches of less than 10,000 to ensure you get everything
+# for v2 of the NIH RePORTER API
 
-create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "", include_active = "", pi_name = "", org_names = "", exclude_subprojects = "", activity_code = "", funding_mechanism = "", foa = "", project_number = "", appl_ids = "", covid_response = "", text_search_operator = "and", text_search_field = "all", text_search_string = "", spending_cats = "", match_all_cats = "true") {
+## note: requests for result number 10,001 and up will fail, so break queries up into batches of less than 10,000 to ensure you get everything
+## new search fields: award_types, pi_profile_ids, org_cities, org_states, org_countries, cong_dists, newly_added_projects_only
+
+create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "", include_active = "", pi_name = "", pi_profile_ids = "", org_names = "", org_cities = "", org_states = "", org_countries = "", cong_dists = "", exclude_subprojects = "", activity_code = "", funding_mechanism = "", foa = "", project_number = "", appl_ids = "", award_types = "", covid_response = "", text_search_operator = "and", text_search_field = "all", text_search_string = "", spending_cats = "", match_all_cats = "true", newly_added_projects_only = "") {
 	theQ <- list(
 		criteria = list(
 		   fiscal_years = FY, 
@@ -9,7 +12,12 @@ create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "",
 		   is_agency_funding = jsonlite::unbox(is_funding_ic), 
 		   include_active_projects = jsonlite::unbox(include_active), 
 		   pi_names = data.frame(any_name = jsonlite::unbox(pi_name)), 
+		   pi_profile_ids = pi_profile_ids,
 		   org_names = org_names, 
+		   org_cities = org_cities, 
+		   org_states = org_states, 
+		   cong_dists = cong_dists, 
+		   org_countries = org_countries, 
 		   exclude_subprojects = jsonlite::unbox(exclude_subprojects), 
 		   advanced_text_search = list(operator = jsonlite::unbox(text_search_operator), search_field = jsonlite::unbox(text_search_field), search_text = jsonlite::unbox(text_search_string)), 
 		   spending_categories = list(Values = spending_cats, match_all = jsonlite::unbox(match_all_cats)), ## note: requires numeric codes as inputs, not actual category names
@@ -18,7 +26,9 @@ create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "",
 		   foa = foa, 
 		   project_nums = project_number, 
 		   appl_ids = appl_ids, 
-		   covid_response = covid_response ## input values: Reg-CV, CV, C3, C4, C5
+		   award_types = award_types, 
+		   covid_response = covid_response, ## input values: Reg-CV, CV, C3, C4, C5
+		   newly_added_projects_only = jsonlite::unbox(newly_added_projects_only)
 		), 
 		offset = jsonlite::unbox(0), 
 		limit = jsonlite::unbox(500)
@@ -36,7 +46,7 @@ create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "",
 ## my_query <- create_query(IC = "NCI", activity_code = c("R01", "R21"))
 ## my_query <- create_query(IC = c("NCI", "NIAID"), FY = "2020")
 ## my_query <- create_query(IC = "NICHD", FY = c("2020", "2019", "2018"))
-## my_query <- create_query(IC = "NICHD", covid_response = c("Reg-CV", "CV", "C3", "C4"))
+## my_query <- create_query(IC = "NICHD", covid_response = c("Reg-CV", "CV", "C3", "C4", "C5"))
 ## etc.
 
 get_nih_reporter <- function(my_query, outfile) {
@@ -46,7 +56,7 @@ get_nih_reporter <- function(my_query, outfile) {
 	mStart <- as.numeric(querya$offset)
 	perPage <- as.numeric(querya$limit)
 	message("Retrieving results ", mStart + 1, " to ", perPage)
-	theURL <- httr::POST("https://api.reporter.nih.gov/v1/projects/Search", httr::accept("text/plain"), httr::content_type_json(), body = my_query)
+	theURL <- httr::POST("https://api.reporter.nih.gov/v2/projects/search", httr::accept("text/plain"), httr::content_type_json(), body = my_query)
 	theData <- httr::content(theURL, as = "text")
 	if (httr::http_error(theURL) == TRUE) {
 		message("HTTP error.")
@@ -66,7 +76,7 @@ get_nih_reporter <- function(my_query, outfile) {
 		gettingPage <- mStart + perPage
 		my_query <- gsub(paste0("\"offset\":", oStart), paste0("\"offset\":", mStart), my_query)
 		message("Retrieving results ", mStart, " to ", gettingPage, " of ", resultCount)
-		theURL <- httr::POST("https://api.reporter.nih.gov/v1/projects/Search", httr::accept("text/plain"), httr::content_type_json(), body = my_query)
+		theURL <- httr::POST("https://api.reporter.nih.gov/v2/projects/Search", httr::accept("text/plain"), httr::content_type_json(), body = my_query)
 		theData <- httr::content(theURL, as = "text")
 		if (httr::http_error(theURL) == TRUE) {
 			message("HTTP error.")
@@ -157,16 +167,17 @@ get_nih_reporter <- function(my_query, outfile) {
 	agency_ic_fundings_total_cost <- sapply(agency_ic_fundings_total_cost, paste, collapse = ";")
 	thePages$agency_ic_fundings_total_cost <- agency_ic_fundings_total_cost
 	thePages$agency_ic_fundings <- NULL
-	canTask <- sapply(thePages$can_task, paste, collapse = ";")
-	thePages$can_task <- canTask
-	specTopic <- sapply(thePages$special_topic_code, paste, collapse = ";")
-	thePages$special_topic_code <- specTopic
+	#canTask <- sapply(thePages$can_task, paste, collapse = ";")
+	#thePages$can_task <- canTask
+	#specTopic <- sapply(thePages$special_topic_code, paste, collapse = ";")
+	#thePages$special_topic_code <- specTopic
 	covid <- sapply(thePages$covid_response, paste, collapse = ";")
 	thePages$covid_response <- covid
 	## uses the tm package
 	thePages$abstract_text <- tm::stripWhitespace(as.character(thePages$abstract_text))
 	thePages$phr_text <- tm::stripWhitespace(as.character(thePages$phr_text))
 	## end tm package
+	colnames(thePages) <- gsub("\\.", "_", colnames(thePages))
 	message("Done.")
 	return(thePages)
 }
@@ -178,7 +189,7 @@ get_nih_reporter <- function(my_query, outfile) {
 
 
 extract_reporter <- function(theFile) {
-	theFile <- scan(theFile, what = "varchar", sep = "\n")
+	theFile <- scan(theFile, what = "varchar", sep = "\n", quiet = TRUE)
 	thePages <- lapply(theFile, jsonlite::fromJSON)
 	thePages <- lapply(1:length(thePages), function(x) thePages[[x]]$results)
 	thePages <- thePages[which(lapply(thePages, is.data.frame) == TRUE)]
@@ -255,16 +266,86 @@ extract_reporter <- function(theFile) {
 	agency_ic_fundings_total_cost <- sapply(agency_ic_fundings_total_cost, paste, collapse = ";")
 	thePages$agency_ic_fundings_total_cost <- agency_ic_fundings_total_cost
 	thePages$agency_ic_fundings <- NULL
-	canTask <- sapply(thePages$can_task, paste, collapse = ";")
-	thePages$can_task <- canTask
-	specTopic <- sapply(thePages$special_topic_code, paste, collapse = ";")
-	thePages$special_topic_code <- specTopic
+	#canTask <- sapply(thePages$can_task, paste, collapse = ";")
+	#thePages$can_task <- canTask
+	#specTopic <- sapply(thePages$special_topic_code, paste, collapse = ";")
+	#thePages$special_topic_code <- specTopic
 	covid <- sapply(thePages$covid_response, paste, collapse = ";")
 	thePages$covid_response <- covid
 	## uses the tm package
 	thePages$abstract_text <- tm::stripWhitespace(as.character(thePages$abstract_text))
 	thePages$phr_text <- tm::stripWhitespace(as.character(thePages$phr_text))
 	## end tm package
-	message("Done.")
+	colnames(thePages) <- gsub("\\.", "_", colnames(thePages))
 	return(thePages)
+}
+
+pmid_match <- function(the_ids, idtype) {
+	## Create a list of JSON queries corresponding to the IDs requested
+	idList <- split(the_ids, ceiling(seq_along(the_ids)/100))
+	queryList <- list()
+	for (i in 1:length(idList)) {
+		queryList[[i]] <- list(
+			criteria = list(
+				appl_ids = "",
+				pmids = "",
+				core_project_nums = ""
+			),
+			offset =  jsonlite::unbox(0),
+			limit =  jsonlite::unbox(100)
+		)
+		if (idtype == "appl_id") {
+			queryList[[i]]$criteria$appl_ids <- idList[[i]]
+		}
+		else if (idtype == "pmid") {
+			queryList[[i]]$criteria$pmids <- idList[[i]]
+		}
+		else if (idtype == "core_project_num") {
+			queryList[[i]]$criteria$core_project_nums <- idList[[i]]
+		}
+		else {stop("Invalid idtype. Valid idtypes are 'appl_id', 'pmid', or 'core_project_num'")}
+		queryList[[i]]$criteria <- queryList[[i]]$criteria[!queryList[[i]]$criteria == ""]
+		queryList[[i]] <- jsonlite::toJSON(queryList[[i]])
+	}
+	## create a list to store the resulting data in
+	theD <- list()
+	## Request data from the API for each query and store the results to theD
+	for (i in 1:length(queryList)) {
+		message(paste("Requesting data for query set", i, "of", length(queryList)))
+		theURL <- httr::POST("https://api.reporter.nih.gov/v2/publications/search", httr::accept("text/plain"), httr::content_type_json(), body = queryList[[i]])
+		theJ <- httr::content(theURL, as = "text")
+		if (httr::http_error(theURL) == TRUE) {
+			message("HTTP error.")
+			print(httr::http_status(theURL))
+			break
+		}
+		tempD <- jsonlite::fromJSON(theJ)
+		theD[[i]] <- tempD$results
+		num_results <- tempD$meta$total
+		num_retrieved <- 100
+		mStart <- 0
+		Sys.sleep(1)
+		message(paste("Retrieving", num_results, "PMID-Appl ID matches for query set", i))
+		## if there are more than 100 rows of matches for the query, loop to get additional sets 
+		while(num_results > num_retrieved) {
+			oStart <- mStart
+			mStart <- mStart + 100
+			queryList[[i]] <- gsub(paste0("\"offset\":", oStart), paste0("\"offset\":", mStart), queryList[[i]])
+			theURL <- httr::POST("https://api.reporter.nih.gov/v2/publications/search", httr::accept("text/plain"), httr::content_type_json(), body = queryList[[i]])
+			theJ <- httr::content(theURL, as = "text")
+			if (httr::http_error(theURL) == TRUE) {
+				message("HTTP error.")
+				print(httr::http_status(theURL))
+				break
+			}
+			tempD <- jsonlite::fromJSON(theJ)
+			theD[[i]] <- rbind(theD[[i]], tempD$results)
+			num_retrieved <- num_retrieved + 100
+			Sys.sleep(1)
+		}
+	}
+	## put the results together into a single data frame, and then return it
+	theD <- do.call(rbind, theD)
+	message("Done")
+	return(theD)
 }
