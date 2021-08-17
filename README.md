@@ -59,7 +59,7 @@ awards <- get_nih_reporter(my_query, "reporter_data.txt")
  ```
 If necessary, the function will automatically make additional requests until all of the awards that match your query have been downloaded. The resulting `awards` object will then be a data frame of the requested awards with one award per row. The raw JSON data will also be saved to the outfile, in this case specified as reporter_data.txt.
 
-Note, however, that the API can currently only process the first 10,000 results for any given query. If you try to download more than 10,000 records for a single query, the API will throw an error when you try to request record 10,0001 and above. To get around this, you have to break large search queries up into smaller batches so that each batch returns less than 10,000 results. 
+Note, however, that the API can currently only process the first 10,000 results for any given query. If you try to download more than 10,000 records for a single query, the API will throw an error when you try to request record 10,001 and above. To get around this, you have to break large search queries up into smaller batches so that each batch returns less than 10,000 results. 
 
 ### Matching awards to publication IDs
 
