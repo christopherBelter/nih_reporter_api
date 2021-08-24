@@ -167,6 +167,7 @@ get_nih_reporter <- function(my_query, outfile) {
 	agency_ic_fundings_total_cost <- sapply(agency_ic_fundings_total_cost, paste, collapse = ";")
 	thePages$agency_ic_fundings_total_cost <- agency_ic_fundings_total_cost
 	thePages$agency_ic_fundings <- NULL
+	thePages$organization_org_duns <- sapply(thePages$organization_org_duns, paste, collapse = ";")
 	#canTask <- sapply(thePages$can_task, paste, collapse = ";")
 	#thePages$can_task <- canTask
 	#specTopic <- sapply(thePages$special_topic_code, paste, collapse = ";")
