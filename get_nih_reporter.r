@@ -167,7 +167,7 @@ get_nih_reporter <- function(my_query, outfile) {
 	agency_ic_fundings_total_cost <- sapply(agency_ic_fundings_total_cost, paste, collapse = ";")
 	thePages$agency_ic_fundings_total_cost <- agency_ic_fundings_total_cost
 	thePages$agency_ic_fundings <- NULL
-	thePages$organization_org_duns <- sapply(thePages$organization_org_duns, paste, collapse = ";")
+	#thePages$organization_org_ueis <- sapply(thePages$organization_org_ueis, paste, collapse = ";")
 	#canTask <- sapply(thePages$can_task, paste, collapse = ";")
 	#thePages$can_task <- canTask
 	#specTopic <- sapply(thePages$special_topic_code, paste, collapse = ";")
@@ -179,6 +179,12 @@ get_nih_reporter <- function(my_query, outfile) {
 	thePages$phr_text <- tm::stripWhitespace(as.character(thePages$phr_text))
 	## end tm package
 	colnames(thePages) <- gsub("\\.", "_", colnames(thePages))
+	if (is.list(thePages$organization_org_duns) == TRUE) {
+		thePages$organization_org_duns <- sapply(thePages$organization_org_duns, paste, collapse = ";")
+	}
+	if (is.list(thePages$organization_org_ueis) == TRUE) {
+		thePages$organization_org_ueis <- sapply(thePages$organization_org_ueis, paste, collapse = ";")
+	}
 	message("Done.")
 	return(thePages)
 }
@@ -278,6 +284,9 @@ extract_reporter <- function(theFile) {
 	thePages$phr_text <- tm::stripWhitespace(as.character(thePages$phr_text))
 	## end tm package
 	colnames(thePages) <- gsub("\\.", "_", colnames(thePages))
+	if (is.list(thePages$organization_org_duns) == TRUE) {
+		thePages$organization_org_duns <- sapply(thePages$organization_org_duns, paste, collapse = ";")
+	}
 	return(thePages)
 }
 
