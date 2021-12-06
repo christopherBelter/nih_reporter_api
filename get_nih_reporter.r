@@ -3,7 +3,7 @@
 ## note: requests for result number 10,001 and up will fail, so break queries up into batches of less than 10,000 to ensure you get everything
 ## new search fields: award_types, pi_profile_ids, org_cities, org_states, org_countries, cong_dists, newly_added_projects_only
 
-create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "", include_active = "", pi_name = "", pi_profile_ids = "", org_names = "", org_cities = "", org_states = "", org_countries = "", cong_dists = "", exclude_subprojects = "", activity_code = "", funding_mechanism = "", foa = "", project_number = "", appl_ids = "", award_types = "", covid_response = "", text_search_operator = "and", text_search_field = "all", text_search_string = "", spending_cats = "", match_all_cats = "true", newly_added_projects_only = "") {
+create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "", include_active = "", pi_name = "", pi_profile_ids = "", org_names = "", org_cities = "", org_states = "", org_countries = "", org_dept_types = "", cong_dists = "", exclude_subprojects = "", activity_code = "", funding_mechanism = "", foa = "", project_number = "", appl_ids = "", award_types = "", covid_response = "", text_search_operator = "and", text_search_field = "all", text_search_string = "", spending_cats = "", match_all_cats = "true", newly_added_projects_only = "") {
 	theQ <- list(
 		criteria = list(
 		   fiscal_years = FY, 
@@ -17,7 +17,8 @@ create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "",
 		   org_cities = org_cities, 
 		   org_states = org_states, 
 		   cong_dists = cong_dists, 
-		   org_countries = org_countries, 
+		   org_countries = org_countries,
+		   dept_types = org_dept_types,
 		   exclude_subprojects = jsonlite::unbox(exclude_subprojects), 
 		   advanced_text_search = list(operator = jsonlite::unbox(text_search_operator), search_field = jsonlite::unbox(text_search_field), search_text = jsonlite::unbox(text_search_string)), 
 		   spending_categories = list(Values = spending_cats, match_all = jsonlite::unbox(match_all_cats)), ## note: requires numeric codes as inputs, not actual category names
@@ -286,6 +287,9 @@ extract_reporter <- function(theFile) {
 	colnames(thePages) <- gsub("\\.", "_", colnames(thePages))
 	if (is.list(thePages$organization_org_duns) == TRUE) {
 		thePages$organization_org_duns <- sapply(thePages$organization_org_duns, paste, collapse = ";")
+	}
+	if (is.list(thePages$organization_org_ueis) == TRUE) {
+	   thePages$organization_org_ueis <- sapply(thePages$organization_org_ueis, paste, collapse = ";")
 	}
 	return(thePages)
 }
