@@ -28,7 +28,7 @@ create_query <- function(FY = "", IC = "", is_admin_ic = "", is_funding_ic = "",
 		   project_nums = project_number, 
 		   appl_ids = appl_ids, 
 		   award_types = award_types, 
-		   covid_response = covid_response, ## input values: Reg-CV, CV, C3, C4, C5
+		   covid_response = covid_response, ## input values: Reg-CV, CV, C3, C4, C5, C6
 		   newly_added_projects_only = jsonlite::unbox(newly_added_projects_only)
 		), 
 		offset = jsonlite::unbox(0), 
@@ -105,30 +105,30 @@ get_nih_reporter <- function(my_query, outfile) {
 	  prob <- lapply(1:length(prob), function(x) prob[[x]] <- t1)
 	  thePages$program_officers[which(sapply(thePages$program_officers, length) == 0)] <- prob
 	}
-	pi_profile_ids <- sapply(thePages$principal_investigators, "[[", 1)
+	pi_profile_ids <- lapply(thePages$principal_investigators, "[[", 1)
 	pi_profile_ids <- sapply(pi_profile_ids, paste, collapse = ";")
 	thePages$pi_profile_ids <- pi_profile_ids
-	pi_first_names <- sapply(thePages$principal_investigators, "[[", 2)
+	pi_first_names <- lapply(thePages$principal_investigators, "[[", 2)
 	pi_first_names <- sapply(pi_first_names, paste, collapse = ";")
 	thePages$pi_first_names <- pi_first_names
-	pi_middle_names <- sapply(thePages$principal_investigators, "[[", 3)
+	pi_middle_names <- lapply(thePages$principal_investigators, "[[", 3)
 	pi_middle_names <- sapply(pi_middle_names, paste, collapse = ";")
 	thePages$pi_middle_names <- pi_middle_names
-	pi_last_names <- sapply(thePages$principal_investigators, "[[", 4)
+	pi_last_names <- lapply(thePages$principal_investigators, "[[", 4)
 	pi_last_names <- sapply(pi_last_names, paste, collapse = ";")
 	thePages$pi_last_names <- pi_last_names
-	pi_is_contact_pi <- sapply(thePages$principal_investigators, "[[", 5)
+	pi_is_contact_pi <- lapply(thePages$principal_investigators, "[[", 5)
 	pi_is_contact_pi <- sapply(pi_is_contact_pi, paste, collapse = ";")
 	thePages$pi_is_contact_pi <- pi_is_contact_pi
-	pi_full_names <- sapply(thePages$principal_investigators, "[[", 6)
+	pi_full_names <- lapply(thePages$principal_investigators, "[[", 6)
 	pi_full_names <- sapply(pi_full_names, paste, collapse = ";")
 	thePages$pi_full_names <- pi_full_names
-	pi_titles <- sapply(thePages$principal_investigators, "[[", 7)
+	pi_titles <- lapply(thePages$principal_investigators, "[[", 7)
 	pi_titles <- sapply(pi_titles, paste, collapse = ";")
 	thePages$pi_titles <- pi_titles
-	pi_emails <- sapply(thePages$principal_investigators, "[[", 8)
-	pi_emails <- sapply(pi_emails, paste, collapse = ";")
-	thePages$pi_emails <- pi_emails
+	#pi_emails <- sapply(thePages$principal_investigators, "[[", 8)
+	#pi_emails <- sapply(pi_emails, paste, collapse = ";")
+	#thePages$pi_emails <- pi_emails
 	thePages$principal_investigators <- NULL
 	po_first_names <- sapply(thePages$program_officers, "[", 1, 1)
 	po_first_names <- sapply(po_first_names, paste, collapse = ";")
@@ -211,30 +211,30 @@ extract_reporter <- function(theFile) {
 	  prob <- lapply(1:length(prob), function(x) prob[[x]] <- t1)
 	  thePages$program_officers[which(sapply(thePages$program_officers, length) == 0)] <- prob
 	}
-	pi_profile_ids <- sapply(thePages$principal_investigators, "[[", 1)
+	pi_profile_ids <- lapply(thePages$principal_investigators, "[[", 1)
 	pi_profile_ids <- sapply(pi_profile_ids, paste, collapse = ";")
 	thePages$pi_profile_ids <- pi_profile_ids
-	pi_first_names <- sapply(thePages$principal_investigators, "[[", 2)
+	pi_first_names <- lapply(thePages$principal_investigators, "[[", 2)
 	pi_first_names <- sapply(pi_first_names, paste, collapse = ";")
 	thePages$pi_first_names <- pi_first_names
-	pi_middle_names <- sapply(thePages$principal_investigators, "[[", 3)
+	pi_middle_names <- lapply(thePages$principal_investigators, "[[", 3)
 	pi_middle_names <- sapply(pi_middle_names, paste, collapse = ";")
 	thePages$pi_middle_names <- pi_middle_names
-	pi_last_names <- sapply(thePages$principal_investigators, "[[", 4)
+	pi_last_names <- lapply(thePages$principal_investigators, "[[", 4)
 	pi_last_names <- sapply(pi_last_names, paste, collapse = ";")
 	thePages$pi_last_names <- pi_last_names
-	pi_is_contact_pi <- sapply(thePages$principal_investigators, "[[", 5)
+	pi_is_contact_pi <- lapply(thePages$principal_investigators, "[[", 5)
 	pi_is_contact_pi <- sapply(pi_is_contact_pi, paste, collapse = ";")
 	thePages$pi_is_contact_pi <- pi_is_contact_pi
-	pi_full_names <- sapply(thePages$principal_investigators, "[[", 6)
+	pi_full_names <- lapply(thePages$principal_investigators, "[[", 6)
 	pi_full_names <- sapply(pi_full_names, paste, collapse = ";")
 	thePages$pi_full_names <- pi_full_names
-	pi_titles <- sapply(thePages$principal_investigators, "[[", 7)
+	pi_titles <- lapply(thePages$principal_investigators, "[[", 7)
 	pi_titles <- sapply(pi_titles, paste, collapse = ";")
 	thePages$pi_titles <- pi_titles
-	pi_emails <- sapply(thePages$principal_investigators, "[[", 8)
-	pi_emails <- sapply(pi_emails, paste, collapse = ";")
-	thePages$pi_emails <- pi_emails
+	#pi_emails <- sapply(thePages$principal_investigators, "[[", 8)
+	#pi_emails <- sapply(pi_emails, paste, collapse = ";")
+	#thePages$pi_emails <- pi_emails
 	thePages$principal_investigators <- NULL
 	po_first_names <- sapply(thePages$program_officers, "[", 1, 1)
 	po_first_names <- sapply(po_first_names, paste, collapse = ";")
@@ -296,7 +296,7 @@ extract_reporter <- function(theFile) {
 
 pmid_match <- function(the_ids, idtype) {
 	## Create a list of JSON queries corresponding to the IDs requested
-	idList <- split(the_ids, ceiling(seq_along(the_ids)/100))
+	idList <- split(the_ids, ceiling(seq_along(the_ids)/20))
 	queryList <- list()
 	for (i in 1:length(idList)) {
 		queryList[[i]] <- list(
