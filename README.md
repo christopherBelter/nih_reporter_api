@@ -69,6 +69,12 @@ pub_link <- pmid_match(awards$core_project_num, idtype = "core_project_num")
 ```
 and the resulting `pub_link()` data frame will contain a long-form link table that matches the `appl_id`, `core_project_num`, and `pmid` for each of the awards in your data frame. You can then use other API packages or functions to retrieve the publication metadata for those PMIDs from publication databases like PubMed, Web of Science, or Scopus.
 
+You can also use the same function to go the other way and map PMIDs to their supporting NIH application IDs and core project numbers. So if you have a vector of PMID values called `pmids` in your current R session, you could do
+```r
+award_link <- pmid_match(pmids, idtype = "pmid")
+```
+to retrieve all of the application IDs and core project numbers associated with those PMIDs in RePORTER.
+
 ### Parsing .txt files
 
 The RePORTER data often contains strange characters or embedded nulls in the project abstract and/or public health relevance fields that can cause errors later on. This is especially true when you use `write.csv()` to write the data frame created by the `get_nih_reporter()` function and then try to read it back into R at a later date. So I've added a convenience function, `extract_reporter()`, to read the outfile created by the `get_nih_reporter()` function back into R.
