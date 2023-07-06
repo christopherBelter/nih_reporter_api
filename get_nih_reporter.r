@@ -170,10 +170,14 @@ get_nih_reporter <- function(my_query, outfile) {
 	thePages$agency_ic_fundings_total_cost <- agency_ic_fundings_total_cost
 	thePages$agency_ic_fundings <- NULL
 	#thePages$organization_org_ueis <- sapply(thePages$organization_org_ueis, paste, collapse = ";")
-	#canTask <- sapply(thePages$can_task, paste, collapse = ";")
-	#thePages$can_task <- canTask
-	#specTopic <- sapply(thePages$special_topic_code, paste, collapse = ";")
-	#thePages$special_topic_code <- specTopic
+	if ("can_task" %in% colnames(thePages)) {
+	  canTask <- sapply(thePages$can_task, paste, collapse = ";")
+	  thePages$can_task <- canTask
+	}
+	if ("special_topic_code" %in% colnames(thePages)) {
+	  specTopic <- sapply(thePages$special_topic_code, paste, collapse = ";")
+	  thePages$special_topic_code <- specTopic
+	}
 	covid <- sapply(thePages$covid_response, paste, collapse = ";")
 	thePages$covid_response <- covid
 	## uses the tm package
@@ -275,10 +279,14 @@ extract_reporter <- function(theFile) {
 	agency_ic_fundings_total_cost <- sapply(agency_ic_fundings_total_cost, paste, collapse = ";")
 	thePages$agency_ic_fundings_total_cost <- agency_ic_fundings_total_cost
 	thePages$agency_ic_fundings <- NULL
-	#canTask <- sapply(thePages$can_task, paste, collapse = ";")
-	#thePages$can_task <- canTask
-	#specTopic <- sapply(thePages$special_topic_code, paste, collapse = ";")
-	#thePages$special_topic_code <- specTopic
+	if ("can_task" %in% colnames(thePages)) {
+	  canTask <- sapply(thePages$can_task, paste, collapse = ";")
+	  thePages$can_task <- canTask
+	}
+	if ("special_topic_code" %in% colnames(thePages)) {
+	  specTopic <- sapply(thePages$special_topic_code, paste, collapse = ";")
+	  thePages$special_topic_code <- specTopic
+	}
 	covid <- sapply(thePages$covid_response, paste, collapse = ";")
 	thePages$covid_response <- covid
 	## uses the tm package
