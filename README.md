@@ -41,7 +41,7 @@ As of 10 May 2021, you can now search by [NIH spending category](https://report.
 ```r
 my_query <- create_query(spending_cats = "3920", FY = "2019", exclude_subprojects = TRUE)
 ```
-because the 'Pregnancy' spending category has the numeric code of 3920. As far as I am aware, there is no comprehensive list of spending category codes available.
+because the 'Pregnancy' spending category has the numeric code of 3920. As far as I am aware, there is no comprehensive list of spending category codes available, but a list of the codes that I've been able to generate from the RePORTER data is available in this repo as `rcdc_code_list.csv`.
 
 Also as of 10 May 2021, you can now run text searches in the API. To search for the boolean string 'pregnancy OR pregnant', you can either do something like
 ```r
