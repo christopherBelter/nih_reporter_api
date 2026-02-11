@@ -203,6 +203,7 @@ get_nih_reporter <- function(my_query, outfile) {
 
 extract_reporter <- function(theFile) {
 	theFile <- scan(theFile, what = "varchar", sep = "\n", quiet = TRUE)
+	theFile <- lapply(theFile, iconv, to = "UTF-8", sub = " ")
 	thePages <- lapply(theFile, jsonlite::fromJSON)
 	thePages <- lapply(1:length(thePages), function(x) thePages[[x]]$results)
 	thePages <- thePages[which(lapply(thePages, is.data.frame) == TRUE)]
